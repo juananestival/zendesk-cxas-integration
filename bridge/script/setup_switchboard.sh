@@ -3,11 +3,19 @@
 # escalation at the Agent Workspace. Run once, after creating the
 # Conversations integration in Admin Center (which gives the webhook secret).
 #
-#   INTEGRATION_ID=<custom integration id> ./script/setup_switchboard.sh
+#   SUNCO_KEY_SECRET_VALUE=... ./script/setup_switchboard.sh
 #
-# Uses ZENDESK_SUBDOMAIN, SUNCO_APP_ID, SUNCO_KEY_ID and a plain-text
+# Reads ZENDESK_SUBDOMAIN, SUNCO_APP_ID, SUNCO_KEY_ID and INTEGRATION_ID from
+# script/values.sh when present (environment variables win), plus a plain-text
 # SUNCO_KEY_SECRET_VALUE from the environment. Requires curl and jq.
 set -euo pipefail
+cd "$(dirname "$0")/.."
+if [[ -f script/values.sh ]]; then
+  _ENV_KEY_ID="${SUNCO_KEY_ID:-}" _ENV_INTEGRATION_ID="${INTEGRATION_ID:-}"
+  source script/values.sh
+  SUNCO_KEY_ID="${_ENV_KEY_ID:-$SUNCO_KEY_ID}"
+  INTEGRATION_ID="${_ENV_INTEGRATION_ID:-$INTEGRATION_ID}"
+fi
 
 : "${ZENDESK_SUBDOMAIN:?}" "${SUNCO_APP_ID:?}" "${SUNCO_KEY_ID:?}" "${SUNCO_KEY_SECRET_VALUE:?}" "${INTEGRATION_ID:?}"
 NAME="${SWITCHBOARD_INTEGRATION_NAME:-cxas-bot}"

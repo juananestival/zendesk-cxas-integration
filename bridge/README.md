@@ -88,8 +88,10 @@ ended CES session can't be resumed.
    session, and note their ids.
 4. Make the bot the first responder:
    ```bash
-   ZENDESK_SUBDOMAIN=... SUNCO_APP_ID=... SUNCO_KEY_ID=... SUNCO_KEY_SECRET_VALUE=... \
-   INTEGRATION_ID=<integration id from step 2> ./script/setup_switchboard.sh
+   # Reads the ids from script/values.sh. If the integration key gets a 401/403,
+   # pass an app-level key instead: SUNCO_KEY_ID=app_... SUNCO_KEY_SECRET_VALUE=...
+   read -r -s SUNCO_KEY_SECRET_VALUE && export SUNCO_KEY_SECRET_VALUE
+   ./script/setup_switchboard.sh
    ```
    This creates the `cxas-bot` switchboard integration, sets its next
    integration to `zd-agentWorkspace`, and makes it the switchboard default.
