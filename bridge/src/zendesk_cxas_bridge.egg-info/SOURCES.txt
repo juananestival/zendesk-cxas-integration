@@ -1,0 +1,7 @@
+pyproject.toml
+src/__init__.py
+src/zendesk_cxas_bridge.egg-info/PKG-INFO
+src/zendesk_cxas_bridge.egg-info/SOURCES.txt
+src/zendesk_cxas_bridge.egg-info/dependency_links.txt
+src/zendesk_cxas_bridge.egg-info/requires.txt
+src/zendesk_cxas_bridge.egg-info/top_level.txt

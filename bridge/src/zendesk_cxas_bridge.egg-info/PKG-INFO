@@ -1,0 +1,17 @@
+Metadata-Version: 2.4
+Name: zendesk-cxas-bridge
+Version: 0.1.0
+Summary: Sunshine Conversations (Zendesk messaging) bot bridge for Google CX Agent Studio (CES)
+Requires-Python: >=3.13
+Description-Content-Type: text/markdown
+Requires-Dist: fastapi>=0.115.0
+Requires-Dist: google-auth[requests]>=2.37.0
+Requires-Dist: httpx>=0.28.0
+Requires-Dist: uvicorn>=0.34.0
+Requires-Dist: cachetools>=5.3.0
+Requires-Dist: google-cloud-firestore>=2.14.0
+Requires-Dist: google-cloud-secret-manager>=2.16.0
+Provides-Extra: dev
+Requires-Dist: ruff>=0.8.0; extra == "dev"
+Requires-Dist: pytest>=8.0.0; extra == "dev"
+Requires-Dist: pytest-asyncio>=0.24.0; extra == "dev"
