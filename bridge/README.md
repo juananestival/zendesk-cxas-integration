@@ -80,7 +80,7 @@ ended CES session can't be resumed.
 2. In Admin Center, go to Apps and integrations › Integrations ›
    Conversations integrations and create an integration:
    - **Webhook URL:** `https://<cloud-run-url>/v1/sunco/webhook`
-   - **Triggers:** "Conversation message" and "Conversation postback"
+   - **Triggers:** "Conversation message" and "Postbacks"
    - **Version:** v2
    Note its id and its webhook secret, and create an API key for it (key id and
    secret).
