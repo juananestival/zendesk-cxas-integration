@@ -111,14 +111,28 @@ text.
 
 ### 3. Google Cloud
 
+In Cloud Shell, from `bridge/`:
+
 ```bash
-gcloud iam service-accounts create zendesk-cxas-bridge
-# Grant it: CES API access to the app (e.g. roles/ces.client, or your org's
-# equivalent), roles/secretmanager.secretAccessor on the two secrets, and
-# roles/datastore.user for Firestore.
-cp script/values.sh.example script/values.sh   # fill in
+cp script/values.sh.example script/values.sh   # set CES_DEPLOYMENT and the SUNCO_* ids
+./script/setup_gcp.sh   # APIs, service account and roles, secrets (prompts), Firestore + TTL
 ./script/deploy.sh
 ```
+
+### Order of operations
+
+The Zendesk webhook secret only exists after the integration is created, and
+the webhook URL only exists after the first deploy. So:
+
+1. Create the Conversations integration in Zendesk (Zendesk step 2) with any
+   placeholder webhook URL, and note the integration id, app id, API key id and
+   secret, and webhook secret.
+2. Run `setup_gcp.sh`. It asks for the two secrets.
+3. Run `deploy.sh`, and copy the service URL it prints.
+4. In Admin Center, set the integration's webhook URL to
+   `<service URL>/v1/sunco/webhook`.
+5. Run `setup_switchboard.sh` (Zendesk step 4).
+6. Open the Web Widget and say hi.
 
 The service is deployed with `--allow-unauthenticated`, because Zendesk can't
 send Google identity tokens. Every webhook is authenticated with the shared
