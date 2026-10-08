@@ -75,7 +75,8 @@ ended CES session can't be resumed.
 
 ### 1. Zendesk
 
-1. Turn on messaging and add the Web Widget snippet to the website.
+1. Turn on messaging and add the Web Widget snippet to the website (see
+   [Adding the chat to a website](../docs/website-widget.md)).
 2. In Admin Center, go to Apps and integrations › Integrations ›
    Conversations integrations and create an integration:
    - **Webhook URL:** `https://<cloud-run-url>/v1/sunco/webhook`
