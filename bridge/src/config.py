@@ -135,6 +135,10 @@ CES_API_BASE = _env_str("CES_API_BASE") or "https://ces.googleapis.com/v1"
 # If set, the Zendesk conversation id is sent to CES under this variable name at
 # session start. The variable must be declared in the CXAS app.
 CES_CONVERSATION_ID_VARIABLE = _env_str("CES_CONVERSATION_ID_VARIABLE")
+# If set, sends the customer's channel (Sunshine Conversations source type, e.g.
+# "web", "android", "ios") under this variable at session start, so the agent can
+# pick rich content each surface supports. Must be declared in the CXAS app.
+CES_CHANNEL_VARIABLE = _env_str("CES_CHANNEL_VARIABLE")
 CES_EXCLUDE_DIAGNOSTIC_INFO = _env_flag("CES_EXCLUDE_DIAGNOSTIC_INFO", not DEBUG_MODE)
 # Whole-call budget for one CES turn. Keep it under the Sunshine Conversations
 # webhook timeout so the reply (or fallback handoff) lands before Zendesk retries.

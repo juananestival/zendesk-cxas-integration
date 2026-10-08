@@ -238,3 +238,18 @@ def test_parse_outputs_accepts_string_flag():
 def test_head_root_for_zendesk_domain_check():
     h = Harness([])
     assert h.client.head("/").status_code == 200
+
+
+def test_channel_and_conversation_id_sent_at_session_start(monkeypatch):
+    monkeypatch.setattr(config, "CES_CHANNEL_VARIABLE", "channel")
+    monkeypatch.setattr(config, "CES_CONVERSATION_ID_VARIABLE", "zendesk_conversation_id")
+    h = Harness([{"outputs": [{"text": "a"}]}, {"outputs": [{"text": "b"}]}])
+    first = user_message("hi")
+    first["payload"]["message"]["source"] = {"type": "ios"}
+    h.send(first)
+    h.send(user_message("again", event_id="e2", message_id="m2"))
+
+    assert h.ces_requests[0]["body"]["inputs"][0] == {
+        "variables": {"zendesk_conversation_id": "c1", "channel": "ios"}
+    }
+    assert h.ces_requests[1]["body"]["inputs"] == [{"text": "again"}]

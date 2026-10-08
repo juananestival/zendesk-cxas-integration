@@ -90,8 +90,9 @@ def _to_metadata_value(value: Any) -> str:
     return json.dumps(value, default=str)
 
 
-def extract_user_input(event: dict[str, Any]) -> tuple[str, str | None] | None:
-    """Returns (text for CES, message id) for events the bot should answer, or None.
+def extract_user_input(event: dict[str, Any]) -> tuple[str, str | None, str | None] | None:
+    """Returns (text for CES, message id, channel) for events the bot should answer,
+    or None. The channel is the message source type: "web", "android", "ios", ...
 
     Quick-reply taps arrive as messages whose content carries the reply payload;
     postback buttons arrive as conversation:postback events."""
@@ -107,11 +108,11 @@ def extract_user_input(event: dict[str, Any]) -> tuple[str, str | None] | None:
                 "Ignoring non-text customer message.", extra={"content_type": content.get("type")}
             )
             return None
-        return text, message.get("id")
+        return text, message.get("id"), (message.get("source") or {}).get("type")
     if event.get("type") == "conversation:postback":
         postback = payload.get("postback") or {}
         text = postback.get("payload") or postback.get("text")
-        return (text, None) if text else None
+        return (text, None, None) if text else None
     return None
 
 
@@ -152,7 +153,13 @@ def build_handoff_metadata(
     return metadata
 
 
-async def handle_turn(app_id: str, conversation_id: str, text: str, message_id: str | None) -> None:
+async def handle_turn(
+    app_id: str,
+    conversation_id: str,
+    text: str,
+    message_id: str | None,
+    channel: str | None = None,
+) -> None:
     ces: CesClient = app.state.ces
     sunco: SunshineClient = app.state.sunco
     store = app.state.store
@@ -165,9 +172,11 @@ async def handle_turn(app_id: str, conversation_id: str, text: str, message_id: 
     ces_session = CesClient.session_name(config.CES_DEPLOYMENT, session.ces_session_id)
     log["ces_session"] = ces_session
 
-    variables = None
+    variables = {}
     if is_new and config.CES_CONVERSATION_ID_VARIABLE:
-        variables = {config.CES_CONVERSATION_ID_VARIABLE: conversation_id}
+        variables[config.CES_CONVERSATION_ID_VARIABLE] = conversation_id
+    if is_new and config.CES_CHANNEL_VARIABLE and channel:
+        variables[config.CES_CHANNEL_VARIABLE] = channel
 
     await sunco.typing(app_id, conversation_id)
     try:
@@ -238,13 +247,13 @@ async def webhook(request: Request, x_api_key: str | None = Header(None, alias="
             logger.info("Skipping redelivered event.", extra={"event_id": event["id"]})
             continue
 
-        text, message_id = user_input
+        text, message_id, channel = user_input
         lock = _conversation_locks.get(conversation_id)
         if lock is None:
             lock = _conversation_locks[conversation_id] = asyncio.Lock()
         async with lock:
             try:
-                await handle_turn(app_id, conversation_id, text, message_id)
+                await handle_turn(app_id, conversation_id, text, message_id, channel)
             except Exception:  # noqa: BLE001 - never fail the whole batch
                 logger.error(
                     "Turn failed.",

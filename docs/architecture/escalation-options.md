@@ -4,7 +4,7 @@ Status: proposal · Date: 2026-10-08
 
 ## Goal
 
-A customer clicks a chat button on our website. A Google Customer Experience
+A customer opens chat on our website or in our Android or iOS app. A Google Customer Experience
 Agent Studio (CXAS) agent answers first. If the customer asks for a person, the
 conversation moves to a human agent in Zendesk, with the bot transcript and
 context carried over, and without the customer having to start again.
@@ -21,6 +21,10 @@ context carried over, and without the customer having to start again.
   **switchboard** as a custom bot. On escalation the backend calls
   `passControl` to `zd-agentWorkspace`; the same conversation, with full
   history, lands in the agent's queue as a ticket.
+- **Mobile apps get the same flow** by embedding the Zendesk messaging SDKs for
+  Android and iOS. They use the same messaging backend and switchboard as the
+  Web Widget, so the same bot, handoff and agent queue apply without extra
+  backend work (see [Mobile apps](#mobile-apps-android-and-ios)).
 - **Optionally add a Support app** (ticket sidebar) for agents, showing CXAS
   context such as escalation reason, summary and session id. This is where the
   UJET pattern is genuinely useful.
@@ -220,6 +224,50 @@ from a ticket field and shows the escalation reason, a bot summary, and the
 variables collected. That app can reuse the UJET iframe and `postMessage`
 proxy pattern if its UI is hosted on Cloud Run.
 
+## Mobile apps (Android and iOS)
+
+Requirement: the same chat experience inside our native apps.
+
+Zendesk ships messaging SDKs for Android and iOS. They are the native
+counterparts of the Web Widget: each app is another channel of the same
+Sunshine Conversations app, so its conversations go through the same
+switchboard. With the bot set as the switchboard's default responder, a chat
+started in the app is answered by the same Cloud Run bridge and CXAS agent. It
+escalates with the same `passControl` to the same Agent Workspace queue. **The
+bridge needs no per-platform code.**
+
+What the apps need:
+
+- **The SDK:** embed the Zendesk messaging SDK, initialised with the channel key
+  from Admin Center (one channel per app).
+- **Push notifications:** configure FCM (Android) and APNs (iOS) in Admin
+  Center, so customers get agent replies after they leave the chat screen.
+  This matters more on mobile, because the wait for a human can be long.
+- **Signed-in users:** use JWT authentication in the SDKs and in the Web
+  Widget, so the same customer sees one conversation history on web and mobile,
+  and the ticket is attached to a known Zendesk user.
+
+Rich content support differs by surface (from Zendesk's
+[Web Widget and SDK capabilities](https://developer.zendesk.com/documentation/zendesk-web-widget-sdks/capabilities/)):
+
+| | Web Widget | Android SDK | iOS SDK |
+| --- | --- | --- | --- |
+| Quick replies | Yes | Yes | Yes |
+| Postback buttons | No | Yes | Yes |
+| Carousel | Yes (3 buttons per item) | Yes (3 buttons per item) | Yes (3 buttons per item) |
+| Max buttons on a text message | 10 | 1 | 10 |
+| Push notifications | n/a | Yes | Yes |
+
+Design rule for the CXAS agent: use **quick replies** for choices, because
+they work everywhere, and avoid postback buttons. If an answer really needs a
+richer format, the bridge can send the customer's channel (`web`, `android`,
+`ios`) to CXAS as a session variable, and the agent can branch on it
+(`CES_CHANNEL_VARIABLE` in the bridge).
+
+The alternative of building our own native chat UI (as in Option B) would mean
+rebuilding realtime messaging, push and offline handling twice. That strengthens
+the case for Option A.
+
 ## Proposed components
 
 - `bridge/` is the Cloud Run service. It verifies the Sunshine webhook
@@ -233,6 +281,8 @@ proxy pattern if its UI is hosted on Cloud Run.
   webhook integration plus switchboard integration (default, next =
   `zd-agentWorkspace`), and custom ticket fields for the CXAS session id and
   escalation reason.
+- **Mobile apps**: the Zendesk messaging SDK for Android and iOS, with push
+  (FCM and APNs) configured in Admin Center.
 - `zendesk-app/` (optional) is the ticket sidebar app for agents.
 
 ## Open questions to settle in a spike

@@ -1,7 +1,9 @@
 # Zendesk CXAS bridge
 
 A Cloud Run service that puts a Google CX Agent Studio (CXAS) agent in front of
-Zendesk messaging. The customer chats in the Zendesk Web Widget. The CXAS agent
+Zendesk messaging. The customer chats in the Zendesk Web Widget or in the
+Zendesk messaging SDK inside the Android or iOS app. All of them reach the
+bridge the same way. The CXAS agent
 answers first. When the agent calls `end_session(session_escalated=True, ...)`,
 the conversation moves to a human in the Zendesk Agent Workspace, in the same
 widget and with the bot transcript.
@@ -60,6 +62,7 @@ ended CES session can't be resumed.
 | `TICKET_FIELD_CXAS_SESSION` | no | Ticket field id that receives the full CES session name. |
 | `ESCALATION_PARAM_TICKET_FIELDS` | no | Maps other `end_session` params to ticket fields, e.g. `queue=360001,priority=360002`. |
 | `CES_CONVERSATION_ID_VARIABLE` | no | If set, sends the Zendesk conversation id to CES under this variable at session start. The variable must exist in the CXAS app. |
+| `CES_CHANNEL_VARIABLE` | no | If set, sends the customer's channel (`web`, `android`, `ios`, ...) to CES under this variable at session start. The variable must exist in the CXAS app. |
 | `BOT_DISPLAY_NAME` | no | Name shown on bot messages. |
 | `FALLBACK_MESSAGE` | no | Text shown before an error handoff. |
 | `FIRESTORE_SESSIONS_COLLECTION` | prod | Shared state across instances. Without it, state is in memory, which is only fine for local testing. Add a Firestore TTL policy on `expiry_time` for this collection and for `<collection>_events`. |
@@ -137,6 +140,12 @@ of them:
 When the customer taps a quick reply, its `payload` (`BILLING`) is sent to CES
 as the user's text. Postback buttons work the same way, through
 `conversation:postback`.
+
+Prefer quick replies. They work in the Web Widget and in both mobile SDKs.
+Postback buttons don't render in the Web Widget, and Android shows only one
+button on a text message (see
+[Web Widget and SDK capabilities](https://developer.zendesk.com/documentation/zendesk-web-widget-sdks/capabilities/)).
+If the agent needs to tailor content per surface, set `CES_CHANNEL_VARIABLE`.
 
 ## Local development
 
