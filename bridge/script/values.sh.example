@@ -2,12 +2,13 @@
 # Copy to script/values.sh (git-ignored) and fill in.
 
 PROJECT_ID="hospitality-demo-361210"
-REGION="europe-west1"
+# Close to the CES "us" location to keep turn latency low.
+REGION="us-central1"
 SERVICE_NAME="zendesk-cxas-bridge"
 SERVICE_ACCOUNT="zendesk-cxas-bridge@${PROJECT_ID}.iam.gserviceaccount.com"
 
 # CX Agent Studio deployment the bot runs.
-CES_DEPLOYMENT="projects/${PROJECT_ID}/locations/us/apps/APP_ID/deployments/DEPLOYMENT_ID"
+CES_DEPLOYMENT="projects/hospitality-demo-361210/locations/us/apps/bc3c9b56-85cd-46ef-88ef-2841d2b3a9e2/deployments/a891a513-6854-46ed-8c8f-44bd53e25e91"
 
 # Zendesk / Sunshine Conversations.
 ZENDESK_SUBDOMAIN="d3v-juanan"
