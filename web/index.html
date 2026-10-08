@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CXAS chat test page</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 40rem; margin: 3rem auto; padding: 0 1rem; line-height: 1.5; }
+    button { font: inherit; padding: .6rem 1rem; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>CXAS chat test page</h1>
+  <p>The chat is answered by the CX Agent Studio agent. Ask for a human to test the escalation to Zendesk.</p>
+  <button id="chat-button" type="button">Open chat</button>
+
+  <!-- Start of d3v-juanan Zendesk Widget script -->
+  <script id="ze-snippet" src="https://static.zdassets.com/ekr/snippet.js?key=3e1667ba-8ac0-4d35-903f-77c088989f4b"> </script>
+  <!-- End of d3v-juanan Zendesk Widget script -->
+  <script>
+    document.getElementById("chat-button").addEventListener("click", () => {
+      if (window.zE) zE("messenger", "open");
+    });
+  </script>
+</body>
+</html>

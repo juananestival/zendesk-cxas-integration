@@ -1,0 +1,35 @@
+[project]
+name = "zendesk-cxas-bridge"
+version = "0.1.0"
+description = "Sunshine Conversations (Zendesk messaging) bot bridge for Google CX Agent Studio (CES)"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi>=0.115.0",
+    # google.auth.transport.requests imports `requests` at module level.
+    "google-auth[requests]>=2.37.0",
+    "httpx>=0.28.0",
+    "uvicorn>=0.34.0",
+    "cachetools>=5.3.0",
+    "google-cloud-firestore>=2.14.0",
+    "google-cloud-secret-manager>=2.16.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.8.0",
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.24.0",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "B", "UP"]
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+pythonpath = ["."]

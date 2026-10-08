@@ -1,0 +1,35 @@
+#!/bin/bash
+# Copy to script/values.sh (git-ignored) and fill in.
+
+PROJECT_ID="hospitality-demo-361210"
+# Close to the CES "us" location to keep turn latency low.
+REGION="us-central1"
+SERVICE_NAME="zendesk-cxas-bridge"
+SERVICE_ACCOUNT="zendesk-cxas-bridge@${PROJECT_ID}.iam.gserviceaccount.com"
+
+# CX Agent Studio deployment the bot runs.
+CES_DEPLOYMENT="projects/hospitality-demo-361210/locations/us/apps/bc3c9b56-85cd-46ef-88ef-2841d2b3a9e2/deployments/a891a513-6854-46ed-8c8f-44bd53e25e91"
+
+# Zendesk / Sunshine Conversations.
+ZENDESK_SUBDOMAIN="d3v-juanan"
+SUNCO_APP_ID="64ec3dee185ed21d7f4a7d8e"
+# Conversations integration (used by setup_switchboard.sh).
+INTEGRATION_ID="6ac780b1e52c7fe0d921b938"
+# Not used by the scripts; kept for reference. Webhook of the Conversations integration.
+SUNCO_WEBHOOK_ID="6ac780b1e52c7fe0d921b937"
+SUNCO_KEY_ID="int_6ac7813074de331f3f330d19"
+# Secret Manager names; the service resolves them at startup.
+SUNCO_KEY_SECRET="projects/${PROJECT_ID}/secrets/sunco-key-secret/versions/latest"
+SUNCO_WEBHOOK_SECRET="projects/${PROJECT_ID}/secrets/sunco-webhook-secret/versions/latest"
+
+# Optional.
+SWITCHBOARD_INTEGRATION_NAME="cxas-bot"
+ESCALATION_TARGET="zd-agentWorkspace"
+TICKET_FIELD_ESCALATION_REASON=""
+TICKET_FIELD_CXAS_SESSION=""
+ESCALATION_PARAM_TICKET_FIELDS=""   # e.g. "queue=360001,priority=360002"
+BOT_DISPLAY_NAME=""
+FIRESTORE_SESSIONS_COLLECTION="zendesk-cxas-sessions"
+FIRESTORE_DATABASE_ID=""
+CES_TIMEOUT_SECONDS="8.0"
+DEBUG="false"
