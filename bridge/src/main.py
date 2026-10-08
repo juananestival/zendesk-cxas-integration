@@ -272,8 +272,9 @@ async def root():
     return {}
 
 
-@app.get("/healthz")
-async def healthz():
+# Not /healthz: Cloud Run reserves paths ending in "z" and never routes them.
+@app.get("/health")
+async def health():
     return {"ok": not config.validate()}
 
 

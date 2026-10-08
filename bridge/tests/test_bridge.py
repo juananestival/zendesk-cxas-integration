@@ -253,3 +253,10 @@ def test_channel_and_conversation_id_sent_at_session_start(monkeypatch):
         "variables": {"zendesk_conversation_id": "c1", "channel": "ios"}
     }
     assert h.ces_requests[1]["body"]["inputs"] == [{"text": "again"}]
+
+
+def test_health_reports_config(monkeypatch):
+    h = Harness([])
+    assert h.client.get("/health").json() == {"ok": True}
+    monkeypatch.setattr(config, "CES_DEPLOYMENT", None)
+    assert h.client.get("/health").json() == {"ok": False}
