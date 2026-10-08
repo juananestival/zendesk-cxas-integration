@@ -90,7 +90,7 @@ ended CES session can't be resumed.
    ```bash
    # Reads the ids from script/values.sh. If the integration key gets a 401/403,
    # pass an app-level key instead: SUNCO_KEY_ID=app_... SUNCO_KEY_SECRET_VALUE=...
-   read -r -s SUNCO_KEY_SECRET_VALUE && export SUNCO_KEY_SECRET_VALUE
+   # The key secret is read from Secret Manager (or prompted for).
    ./script/setup_switchboard.sh
    ```
    This creates the `cxas-bot` switchboard integration, sets its next

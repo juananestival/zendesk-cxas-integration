@@ -3,11 +3,12 @@
 # escalation at the Agent Workspace. Run once, after creating the
 # Conversations integration in Admin Center (which gives the webhook secret).
 #
-#   SUNCO_KEY_SECRET_VALUE=... ./script/setup_switchboard.sh
+#   ./script/setup_switchboard.sh
 #
 # Reads ZENDESK_SUBDOMAIN, SUNCO_APP_ID, SUNCO_KEY_ID and INTEGRATION_ID from
-# script/values.sh when present (environment variables win), plus a plain-text
-# SUNCO_KEY_SECRET_VALUE from the environment. Requires curl and jq.
+# script/values.sh when present (environment variables win). The key secret
+# comes from SUNCO_KEY_SECRET_VALUE, else Secret Manager, else a prompt.
+# Requires curl, jq and gcloud.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 if [[ -f script/values.sh ]]; then
@@ -17,6 +18,16 @@ if [[ -f script/values.sh ]]; then
   INTEGRATION_ID="${_ENV_INTEGRATION_ID:-$INTEGRATION_ID}"
 fi
 
+# The key secret: environment first, then the Secret Manager path in values.sh,
+# then a hidden prompt.
+if [[ -z "${SUNCO_KEY_SECRET_VALUE:-}" && "${SUNCO_KEY_SECRET:-}" == projects/* ]]; then
+  SECRET_NAME="$(echo "$SUNCO_KEY_SECRET" | cut -d/ -f4)"
+  SUNCO_KEY_SECRET_VALUE="$(gcloud secrets versions access latest --secret "$SECRET_NAME" \
+    --project "$(echo "$SUNCO_KEY_SECRET" | cut -d/ -f2)" 2>/dev/null || true)"
+fi
+if [[ -z "${SUNCO_KEY_SECRET_VALUE:-}" ]]; then
+  read -r -s -p "Conversations API key secret: " SUNCO_KEY_SECRET_VALUE; echo
+fi
 : "${ZENDESK_SUBDOMAIN:?}" "${SUNCO_APP_ID:?}" "${SUNCO_KEY_ID:?}" "${SUNCO_KEY_SECRET_VALUE:?}" "${INTEGRATION_ID:?}"
 NAME="${SWITCHBOARD_INTEGRATION_NAME:-cxas-bot}"
 API="https://${ZENDESK_SUBDOMAIN}.zendesk.com/sc/v2/apps/${SUNCO_APP_ID}"
