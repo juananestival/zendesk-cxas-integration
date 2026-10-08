@@ -18,15 +18,16 @@ if [[ -f script/values.sh ]]; then
   INTEGRATION_ID="${_ENV_INTEGRATION_ID:-$INTEGRATION_ID}"
 fi
 
-# The key secret: environment first, then the Secret Manager path in values.sh,
-# then a hidden prompt.
-if [[ -z "${SUNCO_KEY_SECRET_VALUE:-}" && "${SUNCO_KEY_SECRET:-}" == projects/* ]]; then
+# The key secret: environment first, then the Secret Manager path in values.sh
+# (only when using the key id from values.sh), then a hidden prompt.
+if [[ -z "${SUNCO_KEY_SECRET_VALUE:-}" && -z "${_ENV_KEY_ID:-}" \
+      && "${SUNCO_KEY_SECRET:-}" == projects/* ]]; then
   SECRET_NAME="$(echo "$SUNCO_KEY_SECRET" | cut -d/ -f4)"
   SUNCO_KEY_SECRET_VALUE="$(gcloud secrets versions access latest --secret "$SECRET_NAME" \
     --project "$(echo "$SUNCO_KEY_SECRET" | cut -d/ -f2)" 2>/dev/null || true)"
 fi
 if [[ -z "${SUNCO_KEY_SECRET_VALUE:-}" ]]; then
-  read -r -s -p "Conversations API key secret: " SUNCO_KEY_SECRET_VALUE; echo
+  read -r -s -p "Secret for API key ${SUNCO_KEY_ID}: " SUNCO_KEY_SECRET_VALUE; echo
 fi
 : "${ZENDESK_SUBDOMAIN:?}" "${SUNCO_APP_ID:?}" "${SUNCO_KEY_ID:?}" "${SUNCO_KEY_SECRET_VALUE:?}" "${INTEGRATION_ID:?}"
 NAME="${SWITCHBOARD_INTEGRATION_NAME:-cxas-bot}"
