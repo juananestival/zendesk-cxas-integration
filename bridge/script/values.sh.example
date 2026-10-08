@@ -16,7 +16,7 @@ SUNCO_APP_ID="64ec3dee185ed21d7f4a7d8e"
 # Conversations integration (used by setup_switchboard.sh).
 INTEGRATION_ID="6ac77cce7700c1ff31a4a6fb"
 # Not used by the scripts; kept for reference. Webhook of the Conversations integration.
-SUNCO_WEBHOOK_ID="6ac77cce7700c1ff31a4a6fa"
+SUNCO_WEBHOOK_ID="6ac780b1e52c7fe0d921b937"
 SUNCO_KEY_ID="int_6ac77db9ff80e31935777fd5"
 # Secret Manager names; the service resolves them at startup.
 SUNCO_KEY_SECRET="projects/${PROJECT_ID}/secrets/sunco-key-secret/versions/latest"
