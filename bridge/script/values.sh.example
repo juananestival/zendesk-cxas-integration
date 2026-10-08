@@ -12,6 +12,8 @@ CES_DEPLOYMENT="projects/${PROJECT_ID}/locations/us/apps/APP_ID/deployments/DEPL
 # Zendesk / Sunshine Conversations.
 ZENDESK_SUBDOMAIN="d3v-juanan"
 SUNCO_APP_ID="your-sunco-app-id"
+# Not used by the scripts; kept for reference. Webhook of the Conversations integration.
+SUNCO_WEBHOOK_ID="6ac77cce7700c1ff31a4a6fa"
 SUNCO_KEY_ID="app_xxxxxxxx"
 # Secret Manager names; the service resolves them at startup.
 SUNCO_KEY_SECRET="projects/${PROJECT_ID}/secrets/sunco-key-secret/versions/latest"
